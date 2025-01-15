@@ -112,3 +112,17 @@ func (repository users) GetByID(ID uint64) (models.User, error) {
 
 	return user, nil
 }
+
+func (repository users) Delete(ID uint64) error {
+	statement, err := repository.db.Prepare("DELETE FROM users WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer statement.Close()
+
+	if _, err := statement.Exec(ID); err != nil {
+		return err
+	}
+
+	return nil
+}
