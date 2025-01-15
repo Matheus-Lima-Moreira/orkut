@@ -6,9 +6,13 @@ import (
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
+
+	"github.com/gorilla/mux"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +79,35 @@ func ListUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func ShowUser(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Showing User!"))
+	parameters := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(parameters["userId"], 10, 64)
+	if err != nil {
+		responses.Err(w, http.StatusBadRequest, err)
+		return
+	}
+
+	db, err := database.Connect()
+	if err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewUsersRepository(db)
+
+	user, err := repository.GetByID(userID)
+	if err != nil {
+		responses.Err(w, http.StatusNotFound, err)
+		return
+	}
+
+	if user.ID == 0 {
+		responses.Err(w, http.StatusNotFound, errors.New("user not found"))
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, user)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
