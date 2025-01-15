@@ -37,6 +37,22 @@ func (repository users) Create(user models.User) (uint64, error) {
 	return uint64(lastInsertID), nil
 }
 
+func (repository users) Update(ID uint64, user models.User) error {
+	statement, err := repository.db.Prepare("UPDATE users SET name = ?, nick = ?, email = ? WHERE id = ?")
+
+	if err != nil {
+		return err
+	}
+
+	defer statement.Close()
+
+	if _, err := statement.Exec(user.Name, user.Nick, user.Email, ID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repository users) List(nameOrNick string) ([]models.User, error) {
 	nameOrNick = fmt.Sprintf("%%%s%%", nameOrNick)
 
