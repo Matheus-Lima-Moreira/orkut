@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -13,6 +15,14 @@ func main() {
 
 	r := router.Generate()
 
-	fmt.Printf("🚀 Server is running on port %d", config.Port)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		FullTimestamp:   true,
+		TimestampFormat: "2006-01-02 15:04:05",
+	})
+
+	logrus.WithFields(logrus.Fields{
+		"port": config.Port,
+	}).Info("🚀 Server is running")
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
