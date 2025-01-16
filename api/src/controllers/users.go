@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/src/auth"
 	"api/src/database"
 	"api/src/models"
 	"api/src/repositories"
@@ -114,9 +115,19 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	parameters := mux.Vars(r)
 
 	userID, err := strconv.ParseUint(parameters["userId"], 10, 64)
-
 	if err != nil {
 		responses.Err(w, http.StatusBadRequest, err)
+		return
+	}
+
+	tokenUserID, err := auth.GetUserID(r)
+	if err != nil {
+		responses.Err(w, http.StatusUnauthorized, err)
+		return
+	}
+	
+	if tokenUserID != userID {
+		responses.Err(w, http.StatusForbidden, errors.New("unauthorized to update this user"))
 		return
 	}
 
@@ -164,19 +175,30 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokenUserID, err := auth.GetUserID(r)
+	if err != nil {
+		responses.Err(w, http.StatusUnauthorized, err)
+		return
+	}
+	
+	if tokenUserID != userID {
+		responses.Err(w, http.StatusForbidden, errors.New("unauthorized to update this user"))
+		return
+	}
+
 	db, err := database.Connect()
-	if err!= nil {
-    responses.Err(w, http.StatusInternalServerError, err)
-    return
-  }
+	if err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
 	defer db.Close()
 
 	repository := repositories.NewUsersRepository(db)
 
-	if err := repository.Delete(userID); err!= nil {
-    responses.Err(w, http.StatusInternalServerError, err)
-    return
-  }
+	if err := repository.Delete(userID); err != nil {
+		responses.Err(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	responses.JSON(w, http.StatusNoContent, nil)
 }
