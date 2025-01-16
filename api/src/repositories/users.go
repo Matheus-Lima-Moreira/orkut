@@ -172,3 +172,42 @@ func (repository users) Unfollow(userID, followerID uint64) error {
 
 	return nil
 }
+
+func (repository users) GetFollowers(userID uint64) ([]models.User, error) {
+	rows, err := repository.db.Query(`
+		SELECT 
+			u.id, u.name, u.nick, u.email, u.created_at
+		FROM
+			users u
+		INNER JOIN 
+			followers f
+		ON 
+			u.id = f.follower_id
+		WHERE 
+			f.user_id = ?
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var followers []models.User
+
+	for rows.Next() {
+		var follower models.User
+
+		if err = rows.Scan(
+			&follower.ID,
+			&follower.Name,
+			&follower.Nick,
+			&follower.Email,
+			&follower.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+
+		followers = append(followers, follower)
+	}
+
+	return followers, nil
+}
