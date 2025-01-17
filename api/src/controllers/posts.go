@@ -7,8 +7,12 @@ import (
 	"api/src/repositories"
 	"api/src/responses"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +61,36 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 func ListPosts(w http.ResponseWriter, r *http.Request) {}
 
-func ShowPost(w http.ResponseWriter, r *http.Request) {}
+func ShowPost(w http.ResponseWriter, r *http.Request) {
+  parameters := mux.Vars(r)
+
+  postID, err := strconv.ParseUint(parameters["postId"], 10, 64)
+  if err!= nil {
+    responses.Err(w, http.StatusBadRequest, err)
+    return
+  }
+
+  db, err := database.Connect()
+  if err!= nil {
+    responses.Err(w, http.StatusInternalServerError, err)
+    return
+  }
+  defer db.Close()
+
+  repository := repositories.NewPostsRepository(db)
+
+  post, err := repository.GetByID(postID)
+  if err!= nil {
+    responses.Err(w, http.StatusNotFound, err)
+    return
+  }
+
+  if post.ID == 0 {
+		responses.Err(w, http.StatusNotFound, errors.New("post not found"))
+		return
+	}
+
+  responses.JSON(w, http.StatusOK, post)
+}
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {}
