@@ -11,6 +11,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -52,5 +53,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, token)
+	userID := strconv.FormatUint(userSavedOnDB.ID, 10)
+
+	responses.JSON(w, http.StatusOK, models.DataAuthentication{
+		ID:    userID,
+		Token: token,
+	})
 }
