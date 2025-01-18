@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orkut</title>
+  <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+  {{ template "header" }}
+
+  <div class="container-fluid">
+    <div class="d-flex flex-column mt-4">
+      <div>
+        <h3>New Post</h3>
+        <fieldset>
+          <form id="new-post">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input type="text" class="form-control" id="title" name="title" required placeholder="Insert the title of the post" />
+            </div>
+
+            <div class="form-group">
+              <label for="content">Content</label>
+              <textarea class="form-control" id="content" name="content" required placeholder="Insert the content of the post" rows="10"></textarea>
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+              Publish
+            </button>
+          </form>
+        </fieldset>
+      </div>
+
+      <hr />
+
+      <div>
+        <div id="posts-container">
+          {{ range . }}
+          <div class="jumbotron">
+            <h1 class="display-4">{{ .Title }}</h1>
+            <p class="lead">{{ .Content }}</p>
+            <a href="#"> {{ .AuthorNick }} - {{ .CreatedAt }} </a>
+            <hr class="my-4">
+            <p>Actions</p>
+          </div>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{ template "footer" }}
+
+</body>
+
+{{ template "scripts" }}
+
+</html>
