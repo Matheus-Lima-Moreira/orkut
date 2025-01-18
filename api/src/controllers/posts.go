@@ -59,7 +59,30 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusCreated, post)
 }
 
-func ListPosts(w http.ResponseWriter, r *http.Request) {}
+func ListPosts(w http.ResponseWriter, r *http.Request) {
+  tokenUserID, err := auth.GetUserID(r)
+	if err != nil {
+		responses.Err(w, http.StatusUnauthorized, err)
+		return
+	}
+
+  db, err := database.Connect()
+  if err!= nil {
+    responses.Err(w, http.StatusInternalServerError, err)
+    return
+  }
+  defer db.Close()
+
+  repository := repositories.NewPostsRepository(db)
+
+  posts, err := repository.List(tokenUserID)
+  if err!= nil {
+    responses.Err(w, http.StatusInternalServerError, err)
+    return
+  }
+
+  responses.JSON(w, http.StatusOK, posts)
+}
 
 func ShowPost(w http.ResponseWriter, r *http.Request) {
   parameters := mux.Vars(r)
