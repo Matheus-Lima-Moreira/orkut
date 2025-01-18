@@ -14,8 +14,8 @@ var signupRoutes = []Route{
 	},
 	{
 		URI:       "/signup",
-    Method:    http.MethodPost,
-    Function:  controllers.CreateUser,
-    NeedsAuth: false,
+		Method:    http.MethodPost,
+		Function:  controllers.Signup,
+		NeedsAuth: false,
 	},
 }

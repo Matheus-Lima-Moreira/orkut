@@ -1,10 +1,11 @@
-$('#signup-form').on('submit', Signup);
+$('#signup-form').on('submit', Login);
 
-function Signup(e) {
+function Login(e) {
   e.preventDefault();
 
   if ($('#password').val() !== $('#confirmPassword').val()) {
     alert('Please enter your password again and try again.');
+    return;
   }
 
   $.ajax({
@@ -12,9 +13,14 @@ function Signup(e) {
     method: "POST",
     data: {
       name: $('#name').val(),
-      nickname: $('#nickname').val(),
+      nick: $('#nick').val(),
       email: $('#email').val(),
       password: $('#password').val()
     }
+  }).done(() => {
+    alert("Signup successful")
+  }).fail((err) => {
+    console.log(err);
+    alert("Failed to signup. Please try again");
   });
 }
