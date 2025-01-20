@@ -1,6 +1,8 @@
-$('#new-post').on('submit', createPost);
+$(document).on('submit', '#new-post', createPost)
 $(document).on('click', '.like-post', likePost)
 $(document).on('click', '.dislike-post', dislikePost)
+$(document).on('click', '.delete-post', deletePost)
+$(document).on('click', '#update-post', updatePost)
 
 function createPost(e) {
   e.preventDefault();
@@ -15,7 +17,11 @@ function createPost(e) {
   }).done(() => {
     window.location.reload();
   }).fail(() => {
-    alert('There was an error creating the post - please try again later');
+    Swal.fire(
+      'Error',
+      'There was an error creating the post - please try again later',
+      'error'
+    )
   });
 }
 
@@ -37,7 +43,11 @@ function likePost(e) {
     clickedElement.addClass('text-danger');
     clickedElement.removeClass('like-post');
   }).fail(() => {
-    alert('There was an error liking the post - please try again later');
+    Swal.fire(
+      'Error',
+      'There was an error liking the post - please try again later',
+      'error'
+    )
   }).always(() => {
     clickedElement.prop('disabled', false);
   });
@@ -61,8 +71,85 @@ function dislikePost(e) {
     clickedElement.removeClass('text-danger');
     clickedElement.removeClass('dislike-post');
   }).fail(() => {
-    alert('There was an error disliking the post - please try again later');
+    Swal.fire(
+      'Error',
+      'There was an error disliking the post - please try again later',
+      'error'
+    )
   }).always(() => {
     clickedElement.prop('disabled', false);
   });
+}
+
+function updatePost(e) {
+  e.preventDefault();
+
+  $(this).prop('disabled', true);
+
+  const postId = $(this).data('post-id');
+
+  $.ajax({
+    url: `/posts/${postId}`,
+    method: "PUT",
+    data: {
+      title: $('#title').val(),
+      content: $('#content').val()
+    }
+  }).done(() => {
+    Swal.fire(
+      'Success',
+      'Post updated successfully',
+      'success'
+    ).then(() => {
+      window.location = '/home'
+    })
+  }).fail(() => {
+    Swal.fire(
+      'Error',
+      'There was an error editing the post - please try again later',
+      'error'
+    )
+  }).always(() => {
+    $('#update-post').prop('disabled', false)
+  });
+}
+
+function deletePost(e) {
+  e.preventDefault();
+
+  Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#655CC9',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      deletePostAjax(e);
+    }
+  });
+
+  function deletePostAjax(e) {
+    const clickedElement = $(e.target);
+    const postElement = clickedElement.closest('div');
+    const postId = postElement.data('post-id');
+
+    clickedElement.prop('disabled', true);
+    $.ajax({
+      url: `/posts/${postId}`,
+      method: "DELETE"
+    }).done(() => {
+      postElement.fadeOut("slow", function () {
+        postElement.remove();
+      });
+    }).fail(() => {
+      Swal.fire(
+        'Error',
+        'There was an error deleting the post - please try again later',
+        'error'
+      )
+    });
+  }
 }

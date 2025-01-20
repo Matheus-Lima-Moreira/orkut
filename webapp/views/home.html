@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orkut</title>
   <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+  <style>
+    .btn-custom {
+      background-color: #655CC9;
+      border-color: #655CC9;
+    }
+
+    .btn-custom:hover {
+      background-color: #574AB6;
+      border-color: #574AB6;
+    }
+  </style>
 </head>
 
 <body>
@@ -24,10 +35,10 @@
 
             <div class="form-group">
               <label for="content">Content</label>
-              <textarea class="form-control" id="content" name="content" required placeholder="Insert the content of the post" rows="10"></textarea>
+              <textarea class="form-control" id="content" name="content" required placeholder="Insert the content of the post"></textarea>
             </div>
 
-            <button class="btn btn-primary w-100" type="submit">
+            <button class="btn btn-primary w-100 btn-custom" type="submit">
               Publish
             </button>
           </form>

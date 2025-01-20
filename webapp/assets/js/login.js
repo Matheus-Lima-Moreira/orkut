@@ -12,8 +12,11 @@ function Login(e) {
     }
   }).done(() => {
     window.location = "/home";
-  }).fail((err) => {
-    console.log(err);
-    alert("Invalid credentials");
+  }).fail((_) => {
+    Swal.fire(
+      'Error',
+      'Invalid credentials',
+      'error'
+    )
   });
 }

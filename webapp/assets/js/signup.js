@@ -4,7 +4,11 @@ function Login(e) {
   e.preventDefault();
 
   if ($('#password').val() !== $('#confirmPassword').val()) {
-    alert('Please enter your password again and try again.');
+    Swal.fire(
+      'Error',
+      'The password and confirm password doesn\'t match!',
+      'error'
+    )
     return;
   }
 
@@ -18,9 +22,33 @@ function Login(e) {
       password: $('#password').val()
     }
   }).done(() => {
-    alert("Signup successful")
-  }).fail((err) => {
-    console.log(err);
-    alert("Failed to signup. Please try again");
+    Swal.fire(
+      'Success',
+      'Signup successful',
+      'success'
+    ).then(() => {
+      $.ajax({
+        url: "/login",
+        method: "POST",
+        data: {
+          email: $('#email').val(),
+          password: $('#password').val()
+        }
+      }).done(() => {
+        window.location = "/home";
+      }).fail(() => {
+        Swal.fire(
+          'Error',
+          'Failed to login. Please try again',
+          'error'
+        )
+      })
+    });
+  }).fail((_) => {
+    Swal.fire(
+      'Error',
+      'Failed to signup. Please try again',
+      'error'
+    )
   });
 }

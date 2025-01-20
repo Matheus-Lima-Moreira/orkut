@@ -91,3 +91,62 @@ func DislikePost(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, response.StatusCode, nil)
 }
+
+func EditPost(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	postID, err := strconv.ParseUint(parameters["postId"], 10, 64)
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.Err{Err: err.Error()})
+		return
+	}
+
+	r.ParseForm()
+	post, err := json.Marshal(map[string]string{
+		"Title":   r.FormValue("title"),
+		"Content": r.FormValue("content"),
+	})
+
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.Err{Err: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/posts/%d", config.API_URL, postID)
+	response, err := requests.RequestWithAuthentication(r, http.MethodPut, url, bytes.NewBuffer(post))
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.HandleErrorStatusCode(w, response)
+		return
+	}
+
+	responses.JSON(w, response.StatusCode, nil)
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+	postID, err := strconv.ParseUint(parameters["postId"], 10, 64)
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.Err{Err: err.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/posts/%d", config.API_URL, postID)
+	response, err := requests.RequestWithAuthentication(r, http.MethodDelete, url, nil)
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.HandleErrorStatusCode(w, response)
+		return
+	}
+
+	responses.JSON(w, response.StatusCode, nil)
+}
