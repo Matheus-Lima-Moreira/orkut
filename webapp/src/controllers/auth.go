@@ -80,3 +80,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, response.StatusCode, nil)
 }
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	cookies.Delete(w)
+
+	http.Redirect(w, r, "/login", http.StatusFound)
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orkut - Users</title>
+  <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+  {{ template "header" }}
+  <div class="container-fluid">
+    <div class="row mt-4 mx-2 mx-md-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              Users Founded:
+            </h5>
+            {{ range . }}
+            <p class="card-text">
+              {{ .Name }} - <a href="/users/{{ .ID }}"> {{ .Nick }} </a> - Member Since: {{ .CreatedAt.Format "02/01/2006" }}
+            </p>
+            {{ else }}
+            <p class="card-text">
+              No user was founded! :(
+            </p>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{ template "footer" }}
+</body>
+
+{{ template "scripts" }}
+
+</html>

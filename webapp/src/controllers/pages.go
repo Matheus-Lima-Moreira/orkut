@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 	"webapp/src/config"
 	"webapp/src/cookies"
@@ -17,10 +18,24 @@ import (
 )
 
 func LoadLoginPage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
+	}
+
 	utils.RenderTemplate(w, "login.html", nil)
 }
 
 func LoadSignupPage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", http.StatusFound)
+		return
+	}
+
 	utils.RenderTemplate(w, "signup.html", nil)
 }
 
@@ -105,4 +120,56 @@ func LoadEditPostPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.RenderTemplate(w, "update-post.html", post)
+}
+
+func LoadUsersPage(w http.ResponseWriter, r *http.Request) {
+	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
+
+	url := fmt.Sprintf("%s/users?user=%s", config.API_URL, nameOrNick)
+	response, err := requests.RequestWithAuthentication(r, http.MethodGet, url, nil)
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.HandleErrorStatusCode(w, response)
+		return
+	}
+
+	var users []models.User
+	if err := json.NewDecoder(response.Body).Decode(&users); err != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.Err{Err: err.Error()})
+		return
+	}
+
+	utils.RenderTemplate(w, "users.html", users)
+}
+
+func LoadUserProfilePage(w http.ResponseWriter, r *http.Request) {
+	parameters := mux.Vars(r)
+
+	userID, err := strconv.ParseUint(parameters["userId"], 10, 64)
+	if err != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.Err{Err: err.Error()})
+		return
+	}
+
+	user, err := models.SearchFullUser(userID, r)
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
+		return
+	}
+
+	cookie, _ := cookies.Read(r)
+	userLoggedID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	utils.RenderTemplate(w, "user.html", struct {
+		User         models.User
+		UserLoggedID uint64
+	}{
+		User:         user,
+		UserLoggedID: userLoggedID,
+	})
 }
