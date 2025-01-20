@@ -12,7 +12,7 @@
   {{ template "header" }}
 
   <div class="container-fluid">
-    <div class="d-flex flex-column mt-4">
+    <div class="d-flex flex-column mt-4 mx-2 mx-md-5">
       <div>
         <h3>New Post</h3>
         <fieldset>
@@ -27,7 +27,7 @@
               <textarea class="form-control" id="content" name="content" required placeholder="Insert the content of the post" rows="10"></textarea>
             </div>
 
-            <button class="btn btn-primary" type="submit">
+            <button class="btn btn-primary w-100" type="submit">
               Publish
             </button>
           </form>
@@ -38,14 +38,12 @@
 
       <div>
         <div id="posts-container">
-          {{ range . }}
-          <div class="jumbotron">
-            <h1 class="display-4">{{ .Title }}</h1>
-            <p class="lead">{{ .Content }}</p>
-            <a href="#"> {{ .AuthorNick }} - {{ .CreatedAt }} </a>
-            <hr class="my-4">
-            <p>Actions</p>
-          </div>
+          {{ range .Posts }}
+          {{ if (eq .AuthorID $.UserID) }}
+          {{ template "post-with-permissions" . }}
+          {{ else }}
+          {{ template "post-without-permissions" . }}
+          {{ end }}
           {{ end }}
         </div>
       </div>
@@ -57,5 +55,6 @@
 </body>
 
 {{ template "scripts" }}
+<script src="/assets/js/posts.js"></script>
 
 </html>

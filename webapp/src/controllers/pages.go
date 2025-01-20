@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 	"webapp/src/config"
+	"webapp/src/cookies"
 	"webapp/src/models"
 	"webapp/src/requests"
 	"webapp/src/responses"
@@ -39,5 +42,34 @@ func LoadHomePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RenderTemplate(w, "home.html", posts)
+	loc, err := time.LoadLocation("America/Sao_Paulo")
+	if err != nil {
+		fmt.Println("Erro ao carregar fuso horário:", err)
+		return
+	}
+
+	for i := range posts {
+		utcTime := posts[i].CreatedAt.Format("2006-01-02 15:04:05")
+		layout := "2006-01-02 15:04:05"
+
+		t, err := time.ParseInLocation(layout, utcTime, time.UTC)
+		if err != nil {
+			fmt.Println("Erro ao analisar a data:", err)
+			return
+		}
+
+		posts[i].CreatedAt = t.In(loc)
+	}
+
+	cookie, _ := cookies.Read(r)
+
+	userID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	utils.RenderTemplate(w, "home.html", struct {
+		Posts  []models.Post
+		UserID uint64
+	}{
+		Posts:  posts,
+		UserID: userID,
+	})
 }
