@@ -156,14 +156,19 @@ func LoadUserProfilePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookie, _ := cookies.Read(r)
+	userLoggedID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	if userID == userLoggedID {
+		http.Redirect(w, r, "/profile", http.StatusFound)
+		return
+	}
+
 	user, err := models.SearchFullUser(userID, r)
 	if err != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
 		return
 	}
-
-	cookie, _ := cookies.Read(r)
-	userLoggedID, _ := strconv.ParseUint(cookie["id"], 10, 64)
 
 	utils.RenderTemplate(w, "user.html", struct {
 		User         models.User
@@ -172,4 +177,37 @@ func LoadUserProfilePage(w http.ResponseWriter, r *http.Request) {
 		User:         user,
 		UserLoggedID: userLoggedID,
 	})
+}
+
+func LoadUserLoggedInProfilePage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+	userLoggedID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	user, err := models.SearchFullUser(userLoggedID, r)
+	if err != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: err.Error()})
+		return
+	}
+
+	utils.RenderTemplate(w, "profile.html", user)
+}
+
+func LoadEditProfilePage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+	userLoggedID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	channel := make(chan models.User)
+	go models.SearchUserData(channel, userLoggedID, r)
+	user := <-channel
+
+	if user.ID == 0 {
+		responses.JSON(w, http.StatusInternalServerError, responses.Err{Err: "Error on get user"})
+		return
+	}
+
+	utils.RenderTemplate(w, "update-profile.html", user)
+}
+
+func LoadUpdatePasswordPage(w http.ResponseWriter, r *http.Request) {
+  utils.RenderTemplate(w, "update-password.html", nil)
 }

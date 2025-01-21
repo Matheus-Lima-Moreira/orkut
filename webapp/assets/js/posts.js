@@ -1,10 +1,10 @@
-$(document).on('submit', '#new-post', createPost)
-$(document).on('click', '.like-post', likePost)
-$(document).on('click', '.dislike-post', dislikePost)
-$(document).on('click', '.delete-post', deletePost)
-$(document).on('click', '#update-post', updatePost)
+$(document).on('submit', '#new-post', CreatePost)
+$(document).on('click', '.like-post', LikePost)
+$(document).on('click', '.dislike-post', DislikePost)
+$(document).on('click', '.delete-post', DeletePost)
+$(document).on('click', '#update-post', UpdatePost)
 
-function createPost(e) {
+function CreatePost(e) {
   e.preventDefault();
 
   $.ajax({
@@ -25,7 +25,7 @@ function createPost(e) {
   });
 }
 
-function likePost(e) {
+function LikePost(e) {
   e.preventDefault();
 
   const clickedElement = $(e.target);
@@ -53,7 +53,7 @@ function likePost(e) {
   });
 }
 
-function dislikePost(e) {
+function DislikePost(e) {
   e.preventDefault();
 
   const clickedElement = $(e.target);
@@ -81,7 +81,7 @@ function dislikePost(e) {
   });
 }
 
-function updatePost(e) {
+function UpdatePost(e) {
   e.preventDefault();
 
   $(this).prop('disabled', true);
@@ -114,7 +114,7 @@ function updatePost(e) {
   });
 }
 
-function deletePost(e) {
+function DeletePost(e) {
   e.preventDefault();
 
   Swal.fire({

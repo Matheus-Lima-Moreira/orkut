@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orkut - My Profile</title>
+  <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+  {{ template "header" }}
+
+  <div class="container-fluid">
+    <div class="row mt-4 mx-2 mx-md-5">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              My Profile
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+              {{ .Name }} - {{ .Nick }} - Member Since: {{ .CreatedAt.Format "02/01/2006" }}
+            </h6>
+
+            <p class="card-text">
+              <a href="#" data-toggle="modal" data-target="#followers-modal">
+                Followers: {{ len .Followers }}
+              </a>
+            </p>
+
+            <p class="card-text">
+              <a href="#" data-toggle="modal" data-target="#following-modal">
+                Following: {{ len .Following }}
+              </a>
+            </p>
+
+            <div class="row">
+              <div class="col-12">
+                <a href="/edit-profile" class="card-link">
+                  <button class="btn btn-info">
+                    Edit Profile
+                  </button>
+                </a>
+
+                <a href="/update-password" class="card-link">
+                  <button class="btn btn-info">
+                    Update Password
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4 mx-2 mx-md-5">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title"> My Posts </h5>
+            <p class="card-text">
+              {{ range .Posts }}
+              {{ template "post-with-permissions" . }}
+              {{ else }}
+            <p class="text-muted text-center">
+              No posts found!
+            </p>
+            {{ end }}
+            </p>
+          </div>
+        </div>
+
+        <a id="delete-account" class="card-link">
+          <button class="btn btn-info">
+            Delete Account Permanently
+          </button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {{ template "followers-modal" . }}
+  {{ template "following-modal" . }}
+
+  {{ template "footer" }}
+</body>
+
+{{ template "scripts" }}
+<script src="/assets/js/posts.js"></script>
+<script src="/assets/js/users.js"></script>
+
+</html>

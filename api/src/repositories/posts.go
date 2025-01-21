@@ -193,7 +193,7 @@ func (repository posts) GetByUserID(userID uint64) ([]models.Post, error) {
 
 	var posts []models.Post
 
-	if rows.Next() {
+	for rows.Next() {
 		var post models.Post
 
 		if err := rows.Scan(

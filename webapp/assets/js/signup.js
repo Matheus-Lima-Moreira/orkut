@@ -1,6 +1,6 @@
-$('#signup-form').on('submit', Login);
+$('#signup-form').on('submit', Signup);
 
-function Login(e) {
+function Signup(e) {
   e.preventDefault();
 
   if ($('#password').val() !== $('#confirmPassword').val()) {
