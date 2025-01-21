@@ -29,13 +29,13 @@
             </h6>
 
             <p class="card-text">
-              <a href="#">
+              <a href="#" data-toggle="modal" data-target="#followers-modal">
                 Followers: {{ len .User.Followers }}
               </a>
             </p>
 
             <p class="card-text">
-              <a href="#">
+              <a href="#" data-toggle="modal" data-target="#following-modal">
                 Following: {{ len .User.Following }}
               </a>
             </p>
@@ -77,10 +77,13 @@
     </div>
   </div>
 
+  {{ template "followers-modal" .User }}
+  {{ template "following-modal" .User }}
   {{ template "footer" }}
 </body>
 
 {{ template "scripts" }}
 <script src="/assets/js/posts.js"></script>
+<script src="/assets/js/users.js"></script>
 
 </html>
