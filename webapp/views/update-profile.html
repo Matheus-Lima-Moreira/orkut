@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orkut - Update My Profile</title>
   <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+  <style>
+    .btn-custom {
+      background-color: #655CC9;
+      border-color: #655CC9;
+    }
+
+    .btn-custom:hover {
+      background-color: #574AB6;
+      border-color: #574AB6;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,7 +38,7 @@
             <label for="nick">Nickname</label>
             <input type="text" class="form-control" id="nick" name="nick" required placeholder="Enter your username" value="{{ .Nick }}" />
           </div>
-          <button type="submit" class="btn btn-info">Save Changes</button>
+          <button type="submit" class="btn btn-info btn-custom">Save Changes</button>
         </form>
       </div>
     </div>

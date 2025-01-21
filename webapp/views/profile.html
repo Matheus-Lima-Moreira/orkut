@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orkut - My Profile</title>
   <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+  <style>
+    .btn-custom {
+      background-color: #655CC9;
+      border-color: #655CC9;
+    }
+
+    .btn-custom:hover {
+      background-color: #574AB6;
+      border-color: #574AB6;
+    }
+  </style>
 </head>
 
 <body>
@@ -38,13 +49,13 @@
             <div class="row">
               <div class="col-12">
                 <a href="/edit-profile" class="card-link">
-                  <button class="btn btn-info">
+                  <button class="btn btn-info btn-custom">
                     Edit Profile
                   </button>
                 </a>
 
                 <a href="/update-password" class="card-link">
-                  <button class="btn btn-info">
+                  <button class="btn btn-info btn-custom">
                     Update Password
                   </button>
                 </a>
@@ -73,7 +84,7 @@
         </div>
 
         <a id="delete-account" class="card-link">
-          <button class="btn btn-info">
+          <button class="btn btn-danger">
             Delete Account Permanently
           </button>
         </a>

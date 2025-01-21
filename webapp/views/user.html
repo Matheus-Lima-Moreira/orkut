@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orkut - {{ .User.Name }}</title>
   <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+  <style>
+    .btn-custom {
+      background-color: #655CC9;
+      border-color: #655CC9;
+    }
+
+    .btn-custom:hover {
+      background-color: #574AB6;
+      border-color: #574AB6;
+    }
+  </style>
 </head>
 
 <body>
@@ -43,11 +54,11 @@
 
             <a href="#" class="card-link">
               {{ if $followedByUserLogged }}
-              <button id="unfollow" class="btn btn-info" data-user-id="{{ .User.ID }}">
+              <button id="unfollow" class="btn btn-info btn-custom" data-user-id="{{ .User.ID }}">
                 Unfollow
               </button>
               {{ else }}
-              <button id="follow" class="btn btn-info" data-user-id="{{ .User.ID }}">
+              <button id="follow" class="btn btn-info btn-custom" data-user-id="{{ .User.ID }}">
                 Follow
               </button>
               {{ end }}
